@@ -8,7 +8,7 @@ namespace TamagochiLib
 
     public class TamagochiEventArgs
     {
-        public string Mes { get; private set;}
+        public string Mes { get; private set; }
         public string Food { get; private set; }
         public string Game { get; private set; }
         public string Soap { get; private set; }
