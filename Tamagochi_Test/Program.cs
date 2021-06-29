@@ -21,7 +21,7 @@ namespace Tamagochi_Test
                 Console.WriteLine("1. Get pet \t 2. Feed pet  \t 3. Walk pet");
                 Console.WriteLine("4. Wash pet\t 5. Play with\t 6. Talk with pet");
                 Console.WriteLine("7. Death...\t 8. End game");
-                Console.WriteLine("Введите номер пункта:");
+                Console.WriteLine("Enter number:");
 
                 Console.ForegroundColor = color;
 
