@@ -40,7 +40,7 @@ namespace Tamagochi_Test
                         case 7: DeathTama(player); break;
                         case 8: run = false; continue;
                     }
-                    player.Ageup();
+                    if (player.CheckAlive()) player.Ageup();
                 }
                 catch (Exception ex) { Console.WriteLine(ex.Message); }
 
@@ -71,6 +71,7 @@ namespace Tamagochi_Test
 
             Console.ForegroundColor = colorInfo;
             player.Get(tamagochiType, name, gender,
+                       (o, e) => Console.WriteLine(e.Mes),
                        (o, e) => Console.WriteLine(e.Mes),
                        (o, e) => Console.WriteLine(e.Mes),
                        (o, e) => Console.WriteLine(e.Mes),
