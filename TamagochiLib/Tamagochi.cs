@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace TamagochiLib
 {
     public abstract class Tamagochi : ITamagochi
     {
+        // Событие, когда нужно узнать состояние
+        protected internal event TamagochiStateHandler GotStats;
         // Событие, когда покормили
         protected internal event TamagochiStateHandler Fed;
         // Событие, когда поиграли
@@ -34,8 +37,11 @@ namespace TamagochiLib
         public int fun = 100; // атрибут ментал хелфа...
         public int clean = 100; // чистота
         private Gender gender;
+        private string type = null;
 
         protected int _deathAge = 100; // когда пора умирать
+
+        public bool _isAlive = false;
 
         protected int _hungerTime = 1000; // время голода
         protected int _funTime = 1000; // время ментал хелфа
@@ -45,6 +51,9 @@ namespace TamagochiLib
         {
             this.name = name ?? this.name;
             this.gender = (Gender)gender;
+
+            this.type = Misc.GetObjectName(this);
+            _isAlive = true;
            
         }
 
@@ -59,8 +68,19 @@ namespace TamagochiLib
         protected virtual void onWashed(TamagochiEventArgs e) => CallEvent(e, Washed);
         protected virtual void onWalked(TamagochiEventArgs e) => CallEvent(e, Walked);
         protected virtual void onGot(TamagochiEventArgs e) => CallEvent(e, Got);
-        protected virtual void onDead(TamagochiEventArgs e) => CallEvent(e, Dead);
+        protected void onDead(TamagochiEventArgs e) => CallEvent(e, Dead);
         protected virtual void onVoiced(TamagochiEventArgs e) => CallEvent(e, Voiced);
+        protected void onGotStats(TamagochiEventArgs e) => CallEvent(e, GotStats);
+
+        public void GetStats()
+        {
+            string stats = $"\nHealth: {health}\t Age: {age}\n" +
+                           $"Hunger: {hunger}\t Fun: {fun}\n" +
+                           $"Clean: {clean}";
+
+
+            onGotStats(new TamagochiEventArgs(stats));
+        }
 
         public virtual void Feed(string food)
         {
@@ -69,7 +89,6 @@ namespace TamagochiLib
 
         public virtual void Play(string game)
         {
-            ChangeFun(10);
             onPlayed(new TamagochiEventArgs($"You played {game} with {name}"));
         }
 
@@ -80,41 +99,55 @@ namespace TamagochiLib
 
         public virtual void Walk(string place)
         {
-            ChangeFun(10);
-            ChangeHunger(-5);
+ 
             onWalked(new TamagochiEventArgs($"You walked with {name} at {place}"));
         }
 
         // подача голоса
         public void Voice(string phrase=null)
         {
+            ChangeStat(ref hunger,-20);
+            Console.WriteLine(hunger);
             onVoiced(new TamagochiEventArgs($"{name}: {phrase ?? "..."}"));
+
         }
 
         internal virtual void Get()
         {
-            onGot(new TamagochiEventArgs($"You got new pet!\nType: {this.GetType()}\nName: {name}\nGender: {gender}"));
+             onGot(new TamagochiEventArgs($"You got new pet!\nType: {type}\nName: {name}\nGender: {gender}"));
         }
 
-        public void Death()
+        public void Death(string cause = null)
         {
-            onDead(new TamagochiEventArgs($"Your pet {name} died at the age of {age}"));
+            _isAlive = false;
+            if (cause == null) onDead(new TamagochiEventArgs($"Your pet {name} died at the age of {age}"));
+            else onDead(new TamagochiEventArgs($"Your pet {name} died at the age of {age} because of {cause}"));
         }
 
     
-
         // Старение
-        protected internal void AgeUp()
+        protected internal bool AgeUp()
         {
-            if (age < _deathAge) age++;
-            else Death();
+            if (age <= _deathAge) { age++; return false; }
+            else { return true; }
+        }
+
+        // возвращает причину смерти
+        protected internal string CauseOfDeath()
+        {
+            if (hunger < 0)  return "hunger";
+            if ((health < 0) || (clean < 0)) return "illnes";
+        
+            return null;
         }
 
         // Изменение характеристик
-        protected internal void ChangeHealth(int value) => health += value;
-        protected internal void ChangeHunger(int value) => hunger += value;
-        protected internal void ChangeFun(int value) => fun += value;
-        protected internal void ChangeClean(int value) => clean += value;
+        protected internal void ChangeStat(ref int stat, int value)
+        { 
+            stat += value;
+            if (stat > 100) health = 100;
+        }
+
 
     
     }
