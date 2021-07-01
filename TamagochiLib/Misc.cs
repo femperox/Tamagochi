@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace TamagochiLib
 {
-    class Misc
+    public class Misc
     {
         // Возвращает имя объекта
         public static string GetObjectName(object o)
@@ -18,5 +18,12 @@ namespace TamagochiLib
 
         // кидает исключения
         public static void ThrowEX(string e) => throw new Exception(e);
+    }
+
+
+    public struct Stats
+    {
+        internal int stat;
+        internal int value;
     }
 }
