@@ -1,5 +1,7 @@
 ﻿using System;
 using TamagochiLib;
+using System.Threading;
+
 
 namespace Tamagochi_Test
 {
@@ -7,22 +9,37 @@ namespace Tamagochi_Test
     {
         static ConsoleColor color = ConsoleColor.White;
         static ConsoleColor colorInfo = ConsoleColor.Yellow;
+        static Timer statsWatcherTimer;
+
+        static Player<Tamagochi> player = new Player<Tamagochi>();
 
         static void Main(string[] args)
         {
             bool run = true;
+            bool watchStats = false;
 
-            Player<Tamagochi> player = new Player<Tamagochi>();
 
-            while(run)
+
+            while (run)
             {
-               
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine("1. Get pet \t 2. Feed pet  \t 3. Walk pet");
-                Console.WriteLine("4. Wash pet\t 5. Play with\t 6. Talk with pet");
-                Console.WriteLine("7. Death...\t 8. End game");
-                Console.WriteLine("Enter number:");
+                TimerCallback statsWatcherTimerCallback = new TimerCallback(WatchTamaStats);
 
+                if (!watchStats)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    Console.WriteLine("1. Get pet \t 2. Feed pet  \t 3. Walk pet");
+                    Console.WriteLine("4. Wash pet\t 5. Play with\t 6. Talk with pet");
+                    Console.WriteLine("7. Death...\t 8. Watch Stats\t 9. End game");
+                    Console.WriteLine("Enter number:");
+
+                    statsWatcherTimer?.Dispose();
+                }
+                else
+                {
+                    watchStats = false;
+                    statsWatcherTimer = new Timer(statsWatcherTimerCallback, null, 0, 1000);
+                    Console.Clear();
+                }
                 Console.ForegroundColor = color;
 
                 try
@@ -38,7 +55,9 @@ namespace Tamagochi_Test
                         case 5: PlayTama(player); break;
                         case 6: TalkTama(player); break;
                         case 7: DeathTama(player); break;
-                        case 8: run = false; continue;
+                        case 8: { watchStats = true; WatchTamaStats(null); break; }
+                        case 9: run = false; continue;
+                        case 0: { watchStats = false; Console.Clear(); break; }
                     }
                     if (player.CheckAlive()) player.Ageup();
                 }
@@ -51,7 +70,10 @@ namespace Tamagochi_Test
 
         private static void GetTama(Player<Tamagochi> player)
         {
+            if (player.CheckAlive()) Misc.ThrowEX("You have tamagochi");
+
             
+
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("Choose animal: 1.Cat 2.Dog");
             Console.ForegroundColor = color;
@@ -79,10 +101,17 @@ namespace Tamagochi_Test
                        (o, e) => Console.WriteLine(e.Mes),
                        (o, e) => Console.WriteLine(e.Mes),
                        (o, e) => Console.WriteLine(e.Mes));
+
+            
+             TimerCallback AliveTimerCallback = new TimerCallback(player.TimerCheckAlive);
+             player.CheckAliveTimer = new Timer(AliveTimerCallback, null, 0, player.CheckAliveTime);
+
         }
 
         private static void FeedTama(Player<Tamagochi> player)
         {
+            if (!player.CheckAlive()) { Console.WriteLine(player.CheckAlive()); Misc.ThrowEX("You have no tamagochi"); }
+
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("What do you want to feed it with?");
             Console.ForegroundColor = color;
@@ -94,6 +123,8 @@ namespace Tamagochi_Test
 
         private static void WalkTama(Player<Tamagochi> player)
         {
+            if (!player.CheckAlive()) Misc.ThrowEX("You have no tamagochi");
+
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("Where do you want to walk it?");
             Console.ForegroundColor = color;
@@ -105,6 +136,8 @@ namespace Tamagochi_Test
 
         private static void WashTama(Player<Tamagochi> player)
         {
+            if (!player.CheckAlive()) Misc.ThrowEX("You have no tamagochi");
+
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("Whith what do you want to wash it?");
             Console.ForegroundColor = color;
@@ -116,6 +149,8 @@ namespace Tamagochi_Test
 
         private static void PlayTama(Player<Tamagochi> player)
         {
+            if (!player.CheckAlive()) Misc.ThrowEX("You have no tamagochi");
+
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("In what game do you want to play with it?");
             Console.ForegroundColor = color;
@@ -127,14 +162,27 @@ namespace Tamagochi_Test
 
         private static void TalkTama(Player<Tamagochi> player)
         {
+            if (!player.CheckAlive()) Misc.ThrowEX("You have no tamagochi");
+
             Console.ForegroundColor = colorInfo;
             player.Talk();
         }
 
         private static void DeathTama(Player<Tamagochi> player)
         {
+            if (!player.CheckAlive()) Misc.ThrowEX("You have no tamagochi");
+
             Console.ForegroundColor = colorInfo;
             player.Dead();
+        }
+
+        private static void WatchTamaStats(object o)
+        {
+           
+            Console.Clear();
+            Console.WriteLine("To stop watching stats press \"0\" key");
+            player.GetStats();
+            
         }
     }
 }
