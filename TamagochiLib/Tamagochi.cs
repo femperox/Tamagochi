@@ -24,6 +24,7 @@ namespace TamagochiLib
         // Событие, когда подаёт голос
         protected internal event TamagochiStateHandler Voiced;
 
+
         enum Gender
         {
             Male =1,
@@ -43,9 +44,16 @@ namespace TamagochiLib
 
         public bool _isAlive = false;
 
-        protected int _hungerTime = 1000; // время голода
-        protected int _funTime = 1000; // время ментал хелфа
-        protected int _cleanTime = 1000; // время чистки
+        internal int _hungerTime = 10000; // время голода
+        internal int _funTime = 1000; // время ментал хелфа
+        internal int _cleanTime = 1000; // время чистки
+
+        internal int _hungerMinus = -5;
+        internal int _funMinus = -2;
+        internal int _cleanMinus = -1;
+        internal int _healthMinus = -3;
+
+        private Stats stats= new Stats();
 
         public Tamagochi(string name, int gender)
         {
@@ -106,8 +114,8 @@ namespace TamagochiLib
         // подача голоса
         public void Voice(string phrase=null)
         {
-            ChangeStat(ref hunger,-20);
-            Console.WriteLine(hunger);
+            stats.stat = 1; stats.value = -20;
+            ChangeStat(stats);
             onVoiced(new TamagochiEventArgs($"{name}: {phrase ?? "..."}"));
 
         }
@@ -135,17 +143,34 @@ namespace TamagochiLib
         // возвращает причину смерти
         protected internal string CauseOfDeath()
         {
-            if (hunger < 0)  return "hunger";
-            if ((health < 0) || (clean < 0)) return "illnes";
+            if (hunger <= 0)  return "hunger";
+            if ((health <= 0) || (clean <= 0)) return "illnes";
         
             return null;
         }
 
         // Изменение характеристик
-        protected internal void ChangeStat(ref int stat, int value)
-        { 
+        protected internal void ChangeStat(object o)
+        {
+            Stats stats = (Stats)o;
+ 
+            switch(stats.stat)
+            {
+                case 1: { CheckStatsChanged(ref hunger, stats.value); break; }
+                case 2: { CheckStatsChanged(ref health, stats.value); ; break; }
+                case 3: { CheckStatsChanged(ref fun, stats.value); ; break; }
+                case 4: { CheckStatsChanged(ref clean, stats.value); ; break; }
+            }
+            
+            
+        }
+
+        // содержание характеристик в пределах [0..100]
+        private void CheckStatsChanged(ref int stat, int value)
+        {
             stat += value;
-            if (stat > 100) health = 100;
+            if (stat > 100) stat = 100;
+            if (stat < 0) stat = 0;
         }
 
 

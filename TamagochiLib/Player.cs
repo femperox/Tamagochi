@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 
 namespace TamagochiLib
@@ -11,9 +12,14 @@ namespace TamagochiLib
         Dog
     }
 
+
     public class Player<T> where T : Tamagochi
     {
         T tamagochi = null;
+        public int CheckAliveTime = 10000;
+
+        public Timer CheckAliveTimer; // таймер на проверку "жив ли?"
+
         public void Get(TamagochiType tamagochiType, string name, int gender,
                         TamagochiStateHandler FedHandler, TamagochiStateHandler PlayedHandler,
                         TamagochiStateHandler WashedHandler, TamagochiStateHandler WalkedHandler,
@@ -31,8 +37,6 @@ namespace TamagochiLib
 
             if (tamagochi == null) throw new Exception("Can't create tamagochi");
 
- 
-
             // установка обработчиков событий
             tamagochi.Fed += FedHandler;
             tamagochi.Played += PlayedHandler;
@@ -44,37 +48,46 @@ namespace TamagochiLib
             tamagochi.GotStats += StatsHandler;
 
             tamagochi.Get();
-            
-        }
 
+            // таймеры на состояние
+            TimerCallback StatsTimerCallback = new TimerCallback(tamagochi.ChangeStat);
+            Timer hungerTimer = new Timer(StatsTimerCallback, new Stats { stat = 1, value = tamagochi._hungerMinus }, 0, tamagochi._hungerTime);
+            Timer funTimer = new Timer(StatsTimerCallback, new Stats { stat = 3, value = tamagochi._funMinus }, 0, tamagochi._funTime);
+            Timer cleanTimer = new Timer(StatsTimerCallback, new Stats { stat = 4, value = tamagochi._cleanMinus }, 0, tamagochi._cleanTime);
+
+        }
 
 
         public void Feed(string food)
         { 
             if (tamagochi == null) Misc.ThrowEX("You have no tamagochi");
             tamagochi.Feed(food);
-            tamagochi.GetStats();
+            GetCauseOfDeath();
+            GetStats();
         }
 
         public void Play(string game)
         {
             if (tamagochi == null) Misc.ThrowEX("You have no tamagochi");
             tamagochi.Play(game);
-            tamagochi.GetStats();
+            GetCauseOfDeath();
+            GetStats();
         }
 
         public void Wash(string soap)
         {
             if (tamagochi == null) Misc.ThrowEX("You have no tamagochi");
             tamagochi.Wash(soap);
-            tamagochi.GetStats();
+            GetCauseOfDeath();
+            GetStats();
         }
 
         public void Walk(string place)
         {
             if (tamagochi == null) Misc.ThrowEX("You have no tamagochi");
             tamagochi.Walk(place);
-            tamagochi.GetStats();
+            GetCauseOfDeath();
+            GetStats();
         }
 
         public void Talk()
@@ -82,7 +95,7 @@ namespace TamagochiLib
             if (tamagochi == null) Misc.ThrowEX("You have no tamagochi");
             tamagochi.Voice();
             GetCauseOfDeath();
- 
+            GetStats();
 
         }
 
@@ -110,9 +123,24 @@ namespace TamagochiLib
 
         public bool CheckAlive()
         {
-            if ((tamagochi == null) || (tamagochi._isAlive)) return false;
+            if ((tamagochi == null) || (!tamagochi._isAlive)) return false;
             else return true;
         }
 
+        public void TimerCheckAlive(object o)
+        {
+            if (tamagochi != null)
+            {
+                if (!CheckAlive()) GetCauseOfDeath();
+            }
+            else CheckAliveTimer.Dispose();
+        }
+
+        public void GetStats()
+        {
+            if (tamagochi == null) Misc.ThrowEX("You have no tamagochi");
+            tamagochi.GetStats();
+        }
+        
     }
 }
