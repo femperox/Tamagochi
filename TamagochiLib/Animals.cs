@@ -8,7 +8,7 @@ namespace TamagochiLib
     {
         public Cat(string name, int gender): base(name, gender)
         {
-            _deathAge = 16;
+            _deathAge = 6;
 
         }
 

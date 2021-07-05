@@ -18,7 +18,16 @@ namespace TamagochiLib
         T tamagochi = null;
         public int CheckAliveTime = 10000;
 
+        private DateTime TimeStarted { get; set; } // время старта игры
+        private DateTime TimeTamaGot { get; set; } // время получения тамагочи
+        private DateTime TimeTamaDied { get; set; } // время смерти тамагочи
+
         public Timer CheckAliveTimer; // таймер на проверку "жив ли?"
+
+        public Player()
+        {
+            TimeStarted = DateTime.Now; 
+        }
 
         public void Get(TamagochiType tamagochiType, string name, int gender,
                         TamagochiStateHandler FedHandler, TamagochiStateHandler PlayedHandler,
@@ -48,6 +57,8 @@ namespace TamagochiLib
             tamagochi.GotStats += StatsHandler;
 
             tamagochi.Get();
+
+            TimeTamaGot = DateTime.Now;
 
             // таймеры на состояние
             TimerCallback StatsTimerCallback = new TimerCallback(tamagochi.ChangeStat);
@@ -106,6 +117,7 @@ namespace TamagochiLib
             tamagochi.Death(causeOfDeath);
             tamagochi = null;
 
+            TimeTamaDied = DateTime.Now;
         }
 
         public void Ageup()
@@ -132,6 +144,9 @@ namespace TamagochiLib
             if (tamagochi != null)
             {
                 if (!CheckAlive()) GetCauseOfDeath();
+
+                // Тестовое взросление 
+                Ageup();
             }
             else CheckAliveTimer.Dispose();
         }

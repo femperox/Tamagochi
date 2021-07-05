@@ -181,7 +181,7 @@ namespace Tamagochi_Test
            
             Console.Clear();
             Console.WriteLine("To stop watching stats press \"0\" key");
-            player.GetStats();
+            if (player.CheckAlive()) player.GetStats();
             
         }
     }
