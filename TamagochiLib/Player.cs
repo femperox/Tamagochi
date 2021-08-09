@@ -18,6 +18,8 @@ namespace TamagochiLib
         T tamagochi = null;
         public int CheckAliveTime = 10000;
 
+        public int Cash = 500;
+
         private DateTime TimeStarted { get; set; } // время старта игры
         private DateTime TimeTamaGot { get; set; } // время получения тамагочи
         private DateTime TimeTamaDied { get; set; } // время смерти тамагочи
