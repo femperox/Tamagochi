@@ -31,7 +31,7 @@ namespace TamagochiLib
             TimeStarted = DateTime.Now; 
         }
 
-        public void Get(TamagochiType tamagochiType, string name, int gender,
+        public void Get(int animal, string name, int gender,
                         TamagochiStateHandler FedHandler, TamagochiStateHandler PlayedHandler,
                         TamagochiStateHandler WashedHandler, TamagochiStateHandler WalkedHandler,
                         TamagochiStateHandler GotHandler, TamagochiStateHandler DeadHandler,
@@ -40,6 +40,8 @@ namespace TamagochiLib
             // если у пользователя уже есть тамагочи
             if (tamagochi != null) Misc.ThrowEX("You already have one!");
 
+            TamagochiType tamagochiType = (TamagochiType)animal;
+          
             switch (tamagochiType)
             {
                 case TamagochiType.Cat: tamagochi = new Cat(name, gender) as T; break;

@@ -79,8 +79,6 @@ namespace Tamagochi_Test
             Console.ForegroundColor = color;
             int animal = Convert.ToInt32(Console.ReadLine());
 
-            TamagochiType tamagochiType = (TamagochiType)animal;
-
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WriteLine("Enter name: ");
             Console.ForegroundColor = color;
@@ -92,7 +90,7 @@ namespace Tamagochi_Test
             int gender = Convert.ToInt32(Console.ReadLine());
 
             Console.ForegroundColor = colorInfo;
-            player.Get(tamagochiType, name, gender,
+            player.Get(animal, name, gender,
                        (o, e) => Console.WriteLine(e.Mes),
                        (o, e) => Console.WriteLine(e.Mes),
                        (o, e) => Console.WriteLine(e.Mes),
@@ -182,6 +180,7 @@ namespace Tamagochi_Test
             Console.Clear();
             Console.WriteLine("To stop watching stats press \"0\" key");
             if (player.CheckAlive()) player.GetStats();
+            
             
         }
     }

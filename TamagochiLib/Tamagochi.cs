@@ -48,7 +48,7 @@ namespace TamagochiLib
         internal int _funTime = 1000; // время ментал хелфа
         internal int _cleanTime = 1000; // время чистки
 
-        internal int _hungerMinus = -5;
+        internal int _hungerMinus = -50;
         internal int _funMinus = -2;
         internal int _cleanMinus = -1;
         internal int _healthMinus = -3;
