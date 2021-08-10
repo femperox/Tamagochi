@@ -4,24 +4,29 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tamagochi_UI"
+        xmlns:tamaLib="clr-namespace:TamagochiLib;assembly=TamagochiLib"        
         mc:Ignorable="d"
-        Title="Tamagochi" Height="450" Width="800">
-    <Grid x:Name="testGrid">
-        <TextBox x:Name="textBox1" Height="22" VerticalAlignment="Top" Margin="230,135,467.6,0" />
-        <Button x:Name="button1"  Width="100" Height="30" Content="Кнопка" Click="button1_Click" />
-
-        <ComboBox Name="typeComboBox" HorizontalAlignment="Left" Margin="355,135,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="-0.175,0.79" SelectionChanged="typeComboBox_SelectionChanged" >
+        Title="Tamagochi" Height="439.6" Width="540.8">
+    <Grid x:Name="testGrid" Margin="0,0,3.4,0">
+        <TextBox x:Name="textBox1" Margin="64,172,0,0" HorizontalAlignment="Left" Width="104" Height="22" VerticalAlignment="Top" />
+        <Button x:Name="button1"  Width="111" Height="30" Content="Завести питомца" Click="button1_Click" Margin="189,254,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+        <ComboBox Name="typeComboBox" HorizontalAlignment="Left" Margin="189,172,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="-0.175,0.79" SelectionChanged="typeComboBox_SelectionChanged" >
             <TextBlock>1</TextBlock>
             <TextBlock>2</TextBlock>
         </ComboBox>
 
-        <ComboBox HorizontalAlignment="Left" Margin="500,135,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="-0.175,0.79" >
-      
+        <ComboBox Name="genderComboBox" HorizontalAlignment="Left" Margin="334,172,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="-0.175,0.79" SelectionChanged="ComboBox_SelectionChanged" >
+            <TextBlock>1</TextBlock>
+            <TextBlock>2</TextBlock>
         </ComboBox>
-        <Label Content="Имя&#xD;&#xA;" HorizontalAlignment="Left" Margin="230,113,0,0" VerticalAlignment="Top"/>
-        <Label Content="Вид&#xA;" HorizontalAlignment="Left" Margin="355,113,0,0" VerticalAlignment="Top"/>
-        <Label Content="Пол" HorizontalAlignment="Left" Margin="500,113,0,0" VerticalAlignment="Top"/>
-       
-        <Image Name="typeimage" HorizontalAlignment="Left" Height="100" Margin="355,10,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Имя&#xD;&#xA;" HorizontalAlignment="Left" Margin="64,145,0,0" VerticalAlignment="Top" Width="108" Height="31"/>
+        <Label Content="Вид&#xA;" HorizontalAlignment="Left" Margin="189,150,0,0" VerticalAlignment="Top"/>
+        <Label Content="Пол" HorizontalAlignment="Left" Margin="334,150,0,0" VerticalAlignment="Top"/>
+
+        <Image Name="typeimage" HorizontalAlignment="Left" Height="103" Margin="189,47,0,0" VerticalAlignment="Top" Width="120"
+               />
+        <Image x:Name="genderimage" HorizontalAlignment="Left" Height="103" Margin="350,47,0,0" VerticalAlignment="Top" Width="94"
+            />
+        <Button Content="Проверить" HorizontalAlignment="Left" Margin="189,306,0,0" VerticalAlignment="Top" Width="111" Height="30" Click="Button_Click"/>
     </Grid>
 </Window>

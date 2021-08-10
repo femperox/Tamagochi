@@ -94,5 +94,19 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\choose_cat.png" />
+    <Resource Include="Resourses\choose_dog.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resourses\choose_female.png" />
+    <Resource Include="Resourses\choose_male.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TamagochiLib\TamagochiLib.csproj">
+      <Project>{61f35352-1356-4086-96c2-733c6f40ff0d}</Project>
+      <Name>TamagochiLib</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

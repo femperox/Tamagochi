@@ -12,8 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Threading;
 
-using System.Collections.Generic;
+using TamagochiLib;
 
 namespace Tamagochi_UI
 {
@@ -23,55 +24,111 @@ namespace Tamagochi_UI
     public partial class MainWindow : Window
     {
         Dictionary<int, string> typeImages;
+        Dictionary<int, string> genderImages;
+
+        Player<Tamagochi> player = new Player<Tamagochi>();
 
         public MainWindow()
         {
             InitializeComponent();
 
-
-            Button myButton = new Button();
-            myButton.Width = 100;
-            myButton.Height = 30;
-            myButton.Content = "Кнопка2";
-            myButton.HorizontalAlignment = HorizontalAlignment.Left;
-            myButton.Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Red);
-            testGrid.Children.Add(myButton);
+            textBox1.IsEnabled = true;
 
             typeImages = new Dictionary<int, string>();
+            genderImages = new Dictionary<int, string>();
 
-            typeImages.Add(1, "img/choose_cat.png");
-            typeImages.Add(2, "img/choose_dog.png");
+            typeImages.Add(1, "Resourses/choose_cat.png");
+            typeImages.Add(2, "Resourses/choose_dog.png");
+
+            genderImages.Add(2, "Resourses/choose_female.png");
+            genderImages.Add(1, "Resourses/choose_male.png");
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            string text = textBox1.Text;
-            // ComboBoxItem selectedItem = (ComboBoxItem)typeComboBox.SelectedItem;
+            string name = "";
 
-            TextBlock tb = (TextBlock)typeComboBox.SelectedItem;
+            try
+            {              
+                name = textBox1.Text;
+                if (!name.Equals(""))
+                {
+                    int type = Int32.Parse(((TextBlock)typeComboBox.SelectedItem).Text);
+                    int gender = Int32.Parse(((TextBlock)genderComboBox.SelectedItem).Text);
 
-            if ((text != ""))
-            {
-                MessageBox.Show(tb.Text);
+                    player.Get(type, name, gender,
+                        (o, ex) => MessageBox.Show(ex.Mes),
+                        (o, ex) => MessageBox.Show(ex.Mes),
+                        (o, ex) => MessageBox.Show(ex.Mes),
+                        (o, ex) => MessageBox.Show(ex.Mes),
+                        (o, ex) => MessageBox.Show(ex.Mes),
+                        (o, ex) => MessageBox.Show(ex.Mes),
+                        (o, ex) => MessageBox.Show(ex.Mes),
+                        (o, ex) => MessageBox.Show(ex.Mes));
+                        TimerCallback AliveTimerCallback = new TimerCallback(player.TimerCheckAlive);
+                        player.CheckAliveTimer = new Timer(AliveTimerCallback, null, 0, player.CheckAliveTime);
+
+                    button1.IsEnabled = false;
+                    textBox1.IsEnabled = false;
+                    typeComboBox.IsEnabled = false;
+                    genderComboBox.IsEnabled = false;
+
+                }
+                else MessageBox.Show("Укажите имя!");
             }
+            catch (NullReferenceException)
+            {
+                MessageBox.Show("Укажите вид/пол!");
+            }
+        }
+
+
+        private void changeImage(Image im, string choise, Dictionary<int,string> dict)
+        {
+            string g;
+            dict.TryGetValue(Int32.Parse(choise), out g);
+
+            BitmapImage bi3 = new BitmapImage();
+            bi3.BeginInit();
+            bi3.UriSource = new Uri(g, UriKind.Relative);
+            bi3.EndInit();
+            im.Stretch = Stretch.Fill;
+            im.Source = bi3;
+
         }
 
         private void typeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
-            //ComboBoxItem selectedItem = (ComboBoxItem)comboBox.SelectedItem;
             TextBlock tb = (TextBlock)comboBox.SelectedItem;
 
             if (tb != null)
             {
-                string g;
-                typeImages.TryGetValue(Int32.Parse(tb.Text), out g);
-                var uriSource = new Uri(@"/Tamagochi_UI;img/"+g, UriKind.Relative);
-                typeimage.Source = new BitmapImage( new Uri("pack://application:,,,/AssemblyName;" + g));
+                changeImage(typeimage, tb.Text, typeImages);
 
             }
             
 
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = (ComboBox)sender;
+            TextBlock tb = (TextBlock)comboBox.SelectedItem;
+
+            if (tb != null)
+            {
+
+                changeImage(genderimage, tb.Text, genderImages);
+
+            }
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (player.CheckAlive()) player.GetStats();
+            player.Dead();
         }
     }
 }
