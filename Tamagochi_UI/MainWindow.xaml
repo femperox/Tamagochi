@@ -27,6 +27,8 @@
                />
         <Image x:Name="genderimage" HorizontalAlignment="Left" Height="103" Margin="350,47,0,0" VerticalAlignment="Top" Width="94"
             />
-        <Button Content="Проверить" HorizontalAlignment="Left" Margin="189,306,0,0" VerticalAlignment="Top" Width="111" Height="30" Click="Button_Click"/>
+        <TextBlock Name ="stateTextBlock" HorizontalAlignment="Left" Height="99" Margin="347,293,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="174"/>
+        <TextBlock Name ="infoTextBlock" HorizontalAlignment="Left" Margin="20,293,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="73" Width="148" RenderTransformOrigin="0.5,0.5"/>
+
     </Grid>
 </Window>

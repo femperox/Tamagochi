@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Threading;
 
 using TamagochiLib;
+using System.Windows.Threading;
 
 namespace Tamagochi_UI
 {
@@ -27,6 +28,8 @@ namespace Tamagochi_UI
         Dictionary<int, string> genderImages;
 
         Player<Tamagochi> player = new Player<Tamagochi>();
+
+        DispatcherTimer timerState;
 
         public MainWindow()
         {
@@ -61,17 +64,23 @@ namespace Tamagochi_UI
                         (o, ex) => MessageBox.Show(ex.Mes),
                         (o, ex) => MessageBox.Show(ex.Mes),
                         (o, ex) => MessageBox.Show(ex.Mes),
+                        (o, ex) => infoTextBlock.Text = ex.Mes,
                         (o, ex) => MessageBox.Show(ex.Mes),
                         (o, ex) => MessageBox.Show(ex.Mes),
-                        (o, ex) => MessageBox.Show(ex.Mes),
-                        (o, ex) => MessageBox.Show(ex.Mes));
-                        TimerCallback AliveTimerCallback = new TimerCallback(player.TimerCheckAlive);
-                        player.CheckAliveTimer = new Timer(AliveTimerCallback, null, 0, player.CheckAliveTime);
+                        (o, ex) => stateTextBlock.Text=ex.Mes);
+                    
+                   
+
+                    timerState = new DispatcherTimer();
+                    timerState.Interval = TimeSpan.FromSeconds(1);
+                    timerState.Tick += stateTextBlock_timer;
+                    timerState.Start();
 
                     button1.IsEnabled = false;
                     textBox1.IsEnabled = false;
                     typeComboBox.IsEnabled = false;
                     genderComboBox.IsEnabled = false;
+
 
                 }
                 else MessageBox.Show("Укажите имя!");
@@ -125,10 +134,18 @@ namespace Tamagochi_UI
 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void stateTextBlock_timer(object sender, EventArgs e)
         {
             if (player.CheckAlive()) player.GetStats();
-            player.Dead();
+            else
+            {
+                timerState.Stop();
+                player.GetCauseOfDeath();
+       
+                infoTextBlock.Text += "died";
+            }
         }
+
+ 
     }
 }
