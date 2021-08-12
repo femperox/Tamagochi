@@ -16,7 +16,8 @@ namespace TamagochiLib
     public class Player<T> where T : Tamagochi
     {
         T tamagochi = null;
-        public int CheckAliveTime = 10000;
+
+        private int CheckAgingTime = 10000;
 
         public int Cash = 500;
 
@@ -24,7 +25,7 @@ namespace TamagochiLib
         private DateTime TimeTamaGot { get; set; } // время получения тамагочи
         private DateTime TimeTamaDied { get; set; } // время смерти тамагочи
 
-        public Timer CheckAliveTimer; // таймер на проверку "жив ли?"
+        private Timer CheckAgingTimer; // таймер на проверку "жив ли?"
 
         public Player()
         {
@@ -69,6 +70,9 @@ namespace TamagochiLib
             Timer hungerTimer = new Timer(StatsTimerCallback, new Stats { stat = 1, value = tamagochi._hungerMinus }, 0, tamagochi._hungerTime);
             Timer funTimer = new Timer(StatsTimerCallback, new Stats { stat = 3, value = tamagochi._funMinus }, 0, tamagochi._funTime);
             Timer cleanTimer = new Timer(StatsTimerCallback, new Stats { stat = 4, value = tamagochi._cleanMinus }, 0, tamagochi._cleanTime);
+
+            TimerCallback AliveTimerCallback = new TimerCallback(TimerCheckAging);
+            CheckAgingTimer = new Timer(AliveTimerCallback, null, 0, CheckAgingTime);
 
         }
 
@@ -117,10 +121,13 @@ namespace TamagochiLib
         public void Dead(string causeOfDeath=null)
         {
             if (tamagochi == null) Misc.ThrowEX("You have no tamagochi");
-            
+
+            CheckAgingTimer.Dispose();
+
             tamagochi.Death(causeOfDeath);
             tamagochi = null;
 
+         
             TimeTamaDied = DateTime.Now;
         }
 
@@ -143,16 +150,13 @@ namespace TamagochiLib
             else return true;
         }
 
-        public void TimerCheckAlive(object o)
+        public void TimerCheckAging(object o)
         {
-            if (tamagochi != null)
+            if (tamagochi != null) 
             {
-                if (!CheckAlive()) GetCauseOfDeath();
-
-                // Тестовое взросление 
-                Ageup();
+                if (CheckAlive()) Ageup();
             }
-            else CheckAliveTimer.Dispose();
+            else CheckAgingTimer.Dispose();
         }
 
         public void GetStats()
