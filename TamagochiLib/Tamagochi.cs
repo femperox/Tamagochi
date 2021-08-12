@@ -44,11 +44,11 @@ namespace TamagochiLib
 
         public bool _isAlive = false;
 
-        internal int _hungerTime = 10000; // время голода
+        internal int _hungerTime = 1000; // время голода
         internal int _funTime = 1000; // время ментал хелфа
         internal int _cleanTime = 1000; // время чистки
 
-        internal int _hungerMinus = -50;
+        internal int _hungerMinus = -5;
         internal int _funMinus = -2;
         internal int _cleanMinus = -1;
         internal int _healthMinus = -3;
@@ -113,9 +113,7 @@ namespace TamagochiLib
 
         // подача голоса
         public void Voice(string phrase=null)
-        {
-            stats.stat = 1; stats.value = -20;
-            ChangeStat(stats);
+        {  
             onVoiced(new TamagochiEventArgs($"{name}: {phrase ?? "..."}"));
 
         }
@@ -127,7 +125,6 @@ namespace TamagochiLib
 
         public void Death(string cause = null)
         {
-            _isAlive = false;
             if (cause == null) onDead(new TamagochiEventArgs($"Your pet {name} died at the age of {age}"));
             else onDead(new TamagochiEventArgs($"Your pet {name} died at the age of {age} because of {cause}"));
         }
@@ -136,14 +133,15 @@ namespace TamagochiLib
         // Старение
         protected internal bool AgeUp()
         {
-            if (age <= _deathAge) { age++; return false; }
-            else { return true; }
+            if (age < _deathAge) { age++; return false; }
+            else { _isAlive = false;  return true; }
         }
 
         // возвращает причину смерти
         protected internal string CauseOfDeath()
         {
             if (hunger <= 0)  return "hunger";
+            if (fun <= 0) return "no attention";
             if ((health <= 0) || (clean <= 0)) return "illnes";
         
             return null;
@@ -170,7 +168,7 @@ namespace TamagochiLib
         {
             stat += value;
             if (stat > 100) stat = 100;
-            if (stat < 0) stat = 0;
+            if (stat < 0) { stat = 0; _isAlive = false; }
         }
 
 
